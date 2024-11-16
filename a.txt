@@ -1,1 +1,1326 @@
-c
+Stack 
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <ctype.h>
+
+typedef struct stacknode {
+    int val;
+    struct stacknode *next;
+} stacknode;
+
+typedef struct stack {
+    stacknode *top;
+    int size;
+} stack;
+
+void push(stack *s, int val) {
+    stacknode *tmp = (stacknode *)malloc(sizeof(stacknode));
+    tmp->val = val;
+    if (s->top == NULL) { 
+        tmp->next = NULL;
+    } else {
+        tmp->next = s->top;
+    }
+    s->top = tmp;
+    s->size++;
+}
+
+int pop(stack *s) {
+    if (s->top == NULL) {
+        return -1;
+    }
+    stacknode *tmp = s->top;
+    s->top = s->top->next;
+    int v = tmp->val;
+    free(tmp);
+    s->size--;
+    return v;
+}
+
+int peek(stack *s) {
+    if (s->top == NULL) { 
+        return -1;
+    } else {
+        return s->top->val;
+    }
+}
+
+void printStack(stack *s) {
+    stacknode *current = s->top;
+    while (current != NULL) {
+        printf("%d|", current->val);
+        current = current->next;
+    }
+    printf("\n");
+}
+
+stack *makeStack() {
+    stack *s = (stack *)malloc(sizeof(stack));
+    s->top = NULL;
+    s->size = 0;
+    return s;
+}
+
+
+Queues 
+# ifndef HEADERFILE
+# define HEADERFILE
+#include "header.h"
+# endif
+typedef struct queuenode
+{
+    int val;
+    struct queuenode *next;
+
+} queuenode;
+
+typedef struct queue
+{
+    queuenode *head;
+    queuenode *tail;
+    int size;
+} queue;
+
+void enqueue(queue *q, int val)
+{
+    queuenode *tmp = (queuenode *)malloc(sizeof(queuenode));
+    tmp->val = val;
+    tmp->next = NULL;
+    
+    if (q->head == NULL && q->tail == NULL){
+        q->head = tmp;
+        q->tail = tmp;
+    }
+    else {
+        q->tail->next = tmp;
+        q->tail = tmp;
+    }
+    q->size++;
+}
+
+void printqueue(queue *q)
+{
+    queuenode *tmp = q->head;
+    while (tmp != NULL)
+    {
+        printf("%d|", tmp->val);
+        tmp = tmp->next;
+    }
+    printf("\n");
+}
+
+int dequeue(queue *q)
+{
+    if (q->head == NULL && q->tail == NULL){
+        return -1;
+    }
+    
+    queuenode *tmp = q->head;
+    q->head = q->head->next;
+    if (q->head == NULL){
+        q->tail = NULL;
+    }
+    int v = tmp->val;
+    q->size--;
+    free(tmp);
+    return v;
+}
+
+int peek(queue *q)
+{
+    if (q->head == NULL)
+    {
+        return -1;
+    }
+    return q->head->val;
+}
+
+queue *makequeue()
+{
+    queue *q = (queue *)malloc(sizeof(queue));
+    q->head = NULL;
+    q->tail = NULL;
+    q->size = 0;
+    return q;
+}
+
+
+
+queue *arr_to_queue(int arr[], int len)
+{
+    queue *q = makequeue();
+    for (int i = 0; i < len; i++)
+    {
+        enqueue(q, arr[len - i - 1]);
+    }
+    return q;
+}
+
+queue *random_queue(int len)
+{
+    int *arr = get_random_array(len);
+    return arr_to_queue(arr,len);
+}
+
+
+Queues Pair
+
+
+#include <stdio.h>
+#include <stdlib.h>
+typedef struct pair {
+    int x, y;
+    struct pair *next;
+} pair;
+
+pair* makepair(int x, int y) {
+    pair* newPair = (pair*)malloc(sizeof(pair));
+    newPair->x = x;
+    newPair->y = y;
+    newPair->next = NULL;
+    return newPair;
+}
+
+typedef struct queue {
+    pair *head;
+    pair *tail;
+    int size;
+} queue;
+
+queue* makequeue() {
+    queue *q = (queue*)malloc(sizeof(queue));
+    q->head = q->tail = NULL;
+    q->size = 0;
+    return q;
+}
+
+void enqueue(queue *q, int x, int y) {
+    pair *newPair = makepair(x, y);
+    if (q->tail == NULL) {
+        q->head = q->tail = newPair;
+    } else {
+        q->tail->next = newPair;
+        q->tail = newPair;
+    }
+    q->size++;
+}
+
+pair dequeue(queue *q) {
+    if (q->head == NULL) {
+        return (pair){-1, -1, NULL};
+    }
+    pair *temp = q->head;
+    pair result = *temp;
+    q->head = q->head->next;
+    if (q->head == NULL) {
+        q->tail = NULL;
+    }
+    free(temp);
+    q->size--;
+    return result;
+}
+
+BFS
+
+void bfs( int n, int adjMatrix[][n]) {
+    int visited[n];
+    for (int i=0; i<n ; i++) {visited[i]=0;}
+    queue * q = makequeue();
+    enqueue(q,0);
+    visited[0] = 1;
+    printf("%d",0);
+    while (q->size!=0) {
+        int node=dequeue(q);
+        for (int j=0 ; j<n ; j++) {
+            if (adjMatrix[node][j]==1 && visited[j]==0) {
+                printf("%d",j);
+                visited[j]=1;
+                enqueue(q,j);
+        }
+    }
+}
+}
+
+DFS
+
+void dfs(int n, int adjMatrix[][n]) {
+    int visited[n];
+    for (int i = 0; i < n; i++) {
+        visited[i] = 0;
+    }
+
+    stack *s = makeStack();
+    push(s, 0);
+    visited[0] = 1; 
+    printf("%d ", 0);
+
+    while (s->size != 0) {
+        int node = peek(s);
+        int found_unvisited = 0;
+
+        for (int j = 0; j < n; j++) {
+            if (adjMatrix[node][j] == 1 && visited[j] == 0) { 
+                printf("%d ", j);
+                visited[j] = 1;
+                push(s, j);
+                found_unvisited = 1;
+                break;
+            }
+        }
+
+        if (!found_unvisited) {
+            pop(s);
+        }
+    }
+}
+
+cycles_bfs
+
+#include "Queues.h"
+
+int hasCycleBFS(int** graph, int v) {
+    int* visited = (int*)calloc(v, sizeof(int));  
+    int* parent = (int*)malloc(v * sizeof(int)); 
+    queue* q = makequeue();
+
+    for (int start = 0; start < v; start++) {
+        if (!visited[start]) {
+            enqueue(q, start);
+            visited[start] = 1;
+            parent[start] = -1;
+
+            while (q->size > 0) {
+                int node = dequeue(q);
+
+                for (int i = 0; i < v; i++) {
+                    if (graph[node][i] == 1) { 
+                        if (!visited[i]) {
+                            visited[i] = 1;
+                            parent[i] = node; 
+                            enqueue(q, i);
+                        } else if (i != parent[node]) { 
+                            // Print the cycle
+                            printf("Cycle detected: ");
+                            int temp = node;
+                            while (temp != -1) {
+                                printf("%d <- ", temp);
+                                temp = parent[temp];
+                                if (temp == i) break; 
+                            }
+                            printf("%d\n", i);
+
+                            free(visited);
+                            free(parent);
+                            return 1;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    free(visited);
+    free(parent);
+    return 0; 
+}
+
+int** createGraph(int v) {
+    int** graph = (int**)malloc(v * sizeof(int*));
+    for (int i = 0; i < v; i++) {
+        graph[i] = (int*)calloc(v, sizeof(int));
+    }
+    return graph;
+}
+
+void freeGraph(int** graph, int v) {
+    for (int i = 0; i < v; i++) {
+        free(graph[i]);
+    }
+    free(graph);
+}
+
+int main() {
+    int v = 5;
+    int** graph = createGraph(v);
+
+    graph[0][1] = graph[1][0] = 1;
+    graph[1][2] = graph[2][1] = 1;
+    graph[2][3] = graph[3][2] = 1;
+    graph[3][0] = graph[0][3] = 1;
+
+    if (hasCycleBFS(graph, v)) {
+        printf("Cycle detected in the graph.\n");
+    } else {
+        printf("No cycle detected in the graph.\n");
+    }
+
+    freeGraph(graph, v);
+    return 0;
+}
+
+
+cycles dfs
+#include "Stacks.h"
+
+int hasCycleDFSUtil(int** graph, int v, int node, int* visited, int* parent) {
+    visited[node] = 1;
+
+    for (int i = 0; i < v; i++) {
+        if (graph[node][i] == 1) {
+            if (!visited[i]) {
+                parent[i] = node; 
+                if (hasCycleDFSUtil(graph, v, i, visited, parent)) {
+                    return 1;
+                }
+            } else if (i != parent[node]) { 
+                printf("Cycle detected: ");
+                int current = node;
+                while (current != i) {
+                    printf("%d <- ", current);
+                    current = parent[current];
+                }
+                printf("%d <- %d\n", i, node);
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+
+int hasCycleDFS(int** graph, int v) {
+    int* visited = (int*)calloc(v, sizeof(int)); 
+    int* parent = (int*)malloc(v * sizeof(int)); 
+
+    for (int i = 0; i < v; i++) {
+        parent[i] = -1;
+    }
+
+    for (int i = 0; i < v; i++) { 
+        if (!visited[i]) {
+            if (hasCycleDFSUtil(graph, v, i, visited, parent)) {
+                free(visited);
+                free(parent);
+                return 1; 
+            }
+        }
+    }
+
+    free(visited);
+    free(parent);
+    return 0; 
+}
+
+int main() {
+    int v = 5;
+    int** graph = (int**)malloc(v * sizeof(int*));
+    for (int i = 0; i < v; i++) {
+        graph[i] = (int*)calloc(v, sizeof(int));
+    }
+    graph[0][1] = graph[1][0] = 1;
+    graph[1][2] = graph[2][1] = 1;
+    graph[2][3] = graph[3][2] = 1;
+    graph[3][0] = graph[0][3] = 1;
+
+    if (hasCycleDFS(graph, v)) {
+        printf("Cycle detected in the graph.\n");
+    } else {
+        printf("No cycle detected in the graph.\n");
+    }
+
+    for (int i = 0; i < v; i++) {
+        free(graph[i]);
+    }
+    free(graph);
+
+    return 0;
+}
+
+
+BST
+
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct Node {
+    int data;
+    struct Node* left;
+    struct Node* right;
+} Node;
+
+Node* createNode(int data) {
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    newNode->data = data;
+    newNode->left = NULL;
+    newNode->right = NULL;
+    return newNode;
+}
+
+// Inorder Traversal: Left -> Root -> Right (Ascending order)
+void inorderTraversal(Node* root) {
+    if (root != NULL) {
+        inorderTraversal(root->left);
+        printf("%d ", root->data); 
+        inorderTraversal(root->right);
+    }
+}
+
+// Preorder Traversal: Root -> Left -> Right | Copying or exporting the structure of the tree, or for prefix notation of expressions.
+void preorderTraversal(Node* root) {
+    if (root != NULL) {
+        printf("%d ", root->data); 
+        preorderTraversal(root->left);
+        preorderTraversal(root->right);
+    }
+}
+
+// Proorder Traversal: Left -> Right -> Root | Deleting or freeing nodes, evaluating expressions in expression trees, or postfix notation of expressions.
+void postorderTraversal(Node* root) {
+    if (root != NULL) {
+        postorderTraversal(root->left);
+        postorderTraversal(root->right);
+        printf("%d ", root->data); 
+    }
+}
+
+Node* insert(Node* root, int data) {
+    if (root == NULL) {
+        return createNode(data);
+    }
+    if (data < root->data) {
+        root->left = insert(root->left, data);
+    } else if (data > root->data) {
+        root->right = insert(root->right, data);
+    }
+    return root;
+}
+
+int isBSTUtil(Node* root, int min, int max) {
+    if (root == NULL) {return 1;}
+    if (root->data <= min || root->data >= max) {return 0;}
+    return isBSTUtil(root->left, min, root->data) && isBSTUtil(root->right, root->data, max);
+}
+
+int isBST(Node* root) {
+    return isBSTUtil(root, INT_MIN, INT_MAX);
+}
+
+
+int main() {
+    Node* root = NULL;
+
+    root = insert(root, 4);
+    root = insert(root, 2);
+    root = insert(root, 5);
+    root = insert(root, 1);
+    root = insert(root, 3);
+
+    printf("Inorder Traversal: ");
+    inorderTraversal(root);
+    printf("\n");
+
+    printf("Preorder Traversal: ");
+    preorderTraversal(root);
+    printf("\n");
+
+    printf("Postorder Traversal: ");
+    postorderTraversal(root);
+    printf("\n");
+
+    int x=isBST(root);
+    printf("%d",x);
+
+    return 0;
+}
+
+Validate BST
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+bool isValidBSTHelper(struct TreeNode* root, long min, long max) {
+    // An empty tree is a valid BST
+    if (root == NULL) {
+        return true;
+    }
+    
+    // Check if the current node's value is within the valid range
+    if (root->val <= min || root->val >= max) {
+        return false;
+    }
+
+    // Recursively validate the left and right subtrees
+    return isValidBSTHelper(root->left, min, root->val) &&
+           isValidBSTHelper(root->right, root->val, max);
+}
+
+// Main function to validate the BST
+bool isValidBST(struct TreeNode* root) {
+    return isValidBSTHelper(root, LONG_MIN, LONG_MAX);
+}
+
+Lowest Common Ancestor of a Binary Search Tree
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+
+struct TreeNode* lowestCommonAncestor(struct TreeNode* root, struct TreeNode* p, struct TreeNode* q) {
+    while (root!=NULL) {
+        if (p->val<root->val && q->val<root->val) {
+            root=root->left;
+        }
+        else if(p->val>root->val && q->val>root->val) {
+            root=root->right;
+        }
+        else{return root;}
+    }
+    return NULL;
+}
+
+Kth smallest 
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+
+
+
+void inorderTraversal(struct TreeNode* root, int x[1000]) {
+    if (root != NULL) {
+        inorderTraversal(root->left,x);
+        for(int i=0;i<1000;i++) {if (x[i]==-1) {x[i]=root->val; break;} }
+        inorderTraversal(root->right,x);
+    }
+}
+int kthSmallest(struct TreeNode* root, int k) {
+    int x[1000];
+    for (int i=0; i<1000 ; i++) {x[i]=-1;}   
+    inorderTraversal(root,x);
+    return  x[k-1];
+    
+}
+
+
+Convert sorted array to bst
+
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct Node {
+    int data;
+    struct Node* left;
+    struct Node* right;
+} Node;
+
+Node* createNode(int data) {
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    newNode->data = data;
+    newNode->left = NULL;
+    newNode->right = NULL;
+    return newNode;
+}
+
+Node* sortedArrayToBSTHelper(int* nums, int start, int end) {
+    if (start > end) {
+        return NULL; 
+    }
+
+    int mid = start + (end - start) / 2;
+    Node* root = createNode(nums[mid]); 
+
+    root->left = sortedArrayToBSTHelper(nums, start, mid - 1);
+    root->right = sortedArrayToBSTHelper(nums, mid + 1, end);
+
+    return root;
+}
+
+Node* sortedArrayToBST(int* nums, int n) {
+    if (n <= 0) {
+        return NULL; 
+    }
+    return sortedArrayToBSTHelper(nums, 0, n - 1);
+}
+
+void inorderTraversal(Node* root) {
+    if (root != NULL) {
+        inorderTraversal(root->left);
+        printf("%d ", root->data);
+        inorderTraversal(root->right);
+    }
+}
+
+Bipartite
+int isBipartite(Node* adjList[], int numNodes) {
+    int color[MAX_NODES];
+    for (int i = 0; i < numNodes; i++) {
+        color[i] = UNCOLORED;
+    }
+
+    for (int start = 0; start < numNodes; start++) {
+        if (color[start] == UNCOLORED) {
+            // BFS queue
+            int queue[MAX_NODES];
+            int front = 0, rear = 0;
+
+            // Start BFS from this node
+            color[start] = COLOR1;
+            queue[rear++] = start;
+
+            while (front < rear) {
+                int current = queue[front++];
+                Node* temp = adjList[current];
+
+                while (temp) {
+                    int neighbor = temp->vertex;
+                    if (color[neighbor] == UNCOLORED) {
+                        // Assign alternate color to neighbor
+                        color[neighbor] = (color[current] == COLOR1) ? COLOR2 : COLOR1;
+                        queue[rear++] = neighbor;
+                    } else if (color[neighbor] == color[current]) {
+                        // Found conflict
+                        return 0;
+                    }
+                    temp = temp->next;
+                }
+            }
+        }
+    }
+
+    return 1;
+}
+
+int main() {
+    int numNodes, numEdges;
+    printf("Enter the number of nodes and edges: ");
+    scanf("%d %d", &numNodes, &numEdges);
+
+    Node* adjList[MAX_NODES] = {NULL};
+
+    printf("Enter the edges (u v):\n");
+    for (int i = 0; i < numEdges; i++) {
+        int u, v;
+        scanf("%d %d", &u, &v);
+        addEdge(adjList, u, v);
+    }
+
+    if (isBipartite(adjList, numNodes)) {
+        printf("The graph is bipartite.\n");
+    } else {
+        printf("The graph is not bipartite.\n");
+    }
+
+    return 0;
+}
+
+prerequisites
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+#define MAX_NODES 1000
+
+// Structure for adjacency list node
+typedef struct Node {
+    int vertex;
+    struct Node* next;
+} Node;
+
+// Function to create a new node
+Node* createNode(int vertex) {
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    newNode->vertex = vertex;
+    newNode->next = NULL;
+    return newNode;
+}
+
+// Add an edge to the adjacency list
+void addEdge(Node* adjList[], int src, int dest) {
+    Node* newNode = createNode(dest);
+    newNode->next = adjList[src];
+    adjList[src] = newNode;
+}
+
+// Function to detect a cycle using DFS
+bool isCycle(Node* adjList[], int* vis, int id) {
+    if (vis[id] == 1) {
+        return true; // Cycle detected
+    }
+    if (vis[id] == 0) {
+        vis[id] = 1; // Mark as visiting
+        Node* temp = adjList[id];
+        while (temp) {
+            if (isCycle(adjList, vis, temp->vertex)) {
+                return true;
+            }
+            temp = temp->next;
+        }
+    }
+    vis[id] = 2; // Mark as visited
+    return false;
+}
+
+// Function to check if all courses can be finished
+bool canFinish(int n, int prerequisites[][2], int prerequisitesSize) {
+    Node* adjList[MAX_NODES] = {NULL};
+    int vis[MAX_NODES] = {0};
+
+    // Build adjacency list
+    for (int i = 0; i < prerequisitesSize; i++) {
+        int u = prerequisites[i][1];
+        int v = prerequisites[i][0];
+        addEdge(adjList, u, v);
+    }
+
+    // Check for cycles in each component
+    for (int i = 0; i < n; i++) {
+        if (isCycle(adjList, vis, i)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+// Main function to test
+int main() {
+    int n = 4; // Number of courses
+    int prerequisites[][2] = {{1, 0}, {2, 1}, {3, 2}, {1, 3}};
+    int prerequisitesSize = sizeof(prerequisites) / sizeof(prerequisites[0]);
+
+    if (canFinish(n, prerequisites, prerequisitesSize)) {
+        printf("All courses can be finished.\n");
+    } else {
+        printf("It is not possible to finish all courses.\n");
+    }
+
+    return 0;
+}
+
+parathesis
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <ctype.h>
+
+typedef struct stacknode {
+    int val;
+    struct stacknode *next;
+} stacknode;
+
+typedef struct stack {
+    stacknode *top;
+    int size;
+} stack;
+
+void push(stack *s, int val) {
+    stacknode *tmp = (stacknode *)malloc(sizeof(stacknode));
+    tmp->val = val;
+    if (s->top == NULL) {  // Use == instead of =
+        tmp->next = NULL;
+    } else {
+        tmp->next = s->top;
+    }
+    s->top = tmp;
+    s->size++;
+}
+
+int pop(stack *s) {
+    if (s->top == NULL) {
+        return -1;
+    }
+    stacknode *tmp = s->top;
+    s->top = s->top->next;
+    int v = tmp->val;
+    free(tmp);
+    s->size--;
+    return v;
+}
+
+int peek(stack *s) {
+    if (s->top == NULL) { 
+        return -1;
+    } else {
+        return s->top->val;
+    }
+}
+
+void printStack(stack *s) {
+    stacknode *current = s->top;
+    while (current != NULL) {
+        printf("%d|", current->val);
+        current = current->next;
+    }
+    printf("\n");
+}
+
+int areStringsEqual(char* str1, char* str2) {
+    int i = 0;
+
+    while (str1[i] != '\0' && str2[i] != '\0') {
+        if (str1[i] != str2[i]) {
+            return 0;
+        }
+        i++;
+    }
+
+    return str1[i] == '\0' && str2[i] == '\0';
+}
+
+
+stack *makeStack() {
+    stack *s = (stack *)malloc(sizeof(stack));
+    s->top = NULL;
+    s->size = 0;
+    return s;
+}
+
+#include <stdbool.h> // Include this for the bool type
+
+bool isValid(char* s) {
+    stack *stk = makeStack();
+    int i = 0;
+    while (s[i] != '\0') {
+        if (s[i] == '(' || s[i] == '[' || s[i] == '{') {
+            push(stk, s[i]);
+        } else {
+            if (stk->top == NULL) {
+                return false;
+            }
+            char top = pop(stk);
+            if ((s[i] == ')' && top != '(') ||
+                (s[i] == ']' && top != '[') ||
+                (s[i] == '}' && top != '{')) {
+                return false;
+            }
+        }
+        i++;
+    }
+    return stk->top == NULL;
+}
+
+linux path
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Define a stack node structure
+typedef struct stacknode {
+    char *val;             // Directory name
+    struct stacknode *next;
+} stacknode;
+
+// Define the stack structure
+typedef struct stack {
+    stacknode *top;        // Top of the stack
+    int size;              // Number of elements in the stack
+} stack;
+
+// Push a value onto the stack
+void push(stack *s, const char *val) {
+    stacknode *newNode = (stacknode *)malloc(sizeof(stacknode));
+    if (!newNode) {
+        perror("Failed to allocate memory for stack node");
+        exit(EXIT_FAILURE);
+    }
+    newNode->val = strdup(val);  // Duplicate the string
+    if (!newNode->val) {
+        perror("Failed to duplicate string");
+        free(newNode);
+        exit(EXIT_FAILURE);
+    }
+    newNode->next = s->top;
+    s->top = newNode;
+    s->size++;
+}
+
+// Pop a value from the stack
+char *pop(stack *s) {
+    if (!s->top) {
+        return NULL;  // Stack is empty
+    }
+    stacknode *tmp = s->top;
+    char *val = tmp->val;
+    s->top = tmp->next;
+    free(tmp);
+    s->size--;
+    return val;
+}
+
+// Create a new stack
+stack *makeStack() {
+    stack *s = (stack *)malloc(sizeof(stack));
+    if (!s) {
+        perror("Failed to allocate memory for stack");
+        exit(EXIT_FAILURE);
+    }
+    s->top = NULL;
+    s->size = 0;
+    return s;
+}
+
+// Simplify the Unix path
+char *simplifyPath(const char *path) {
+    stack *s = makeStack();
+    const char delim[] = "/";
+    char *pathCopy = strdup(path);  // Create a mutable copy of the path
+    if (!pathCopy) {
+        perror("Failed to duplicate path");
+        exit(EXIT_FAILURE);
+    }
+    char *token = strtok(pathCopy, delim);
+
+    // Process each token
+    while (token != NULL) {
+        if (strcmp(token, "..") == 0) {
+            if (s->size > 0) {
+                free(pop(s));  // Pop the stack for ".."
+            }
+        } else if (strcmp(token, ".") != 0 && strcmp(token, "") != 0) {
+            push(s, token);  // Push valid directory names
+        }
+        token = strtok(NULL, delim);
+    }
+    free(pathCopy);  // Free the path copy
+
+    // Construct the simplified path
+    char *result = (char *)malloc(1024);
+    if (!result) {
+        perror("Failed to allocate memory for result");
+        exit(EXIT_FAILURE);
+    }
+    result[0] = '\0';
+
+    // Use a temporary stack to reverse the order
+    stack *tempStack = makeStack();
+    while (s->size > 0) {
+        push(tempStack, pop(s));
+    }
+    while (tempStack->size > 0) {
+        strcat(result, "/");
+        strcat(result, pop(tempStack));
+    }
+
+    // If the result is empty, it means the path is root "/"
+    if (strlen(result) == 0) {
+        strcpy(result, "/");
+    }
+
+    // Free stacks
+    while (s->size > 0) {
+        free(pop(s));
+    }
+    free(s);
+    while (tempStack->size > 0) {
+        free(pop(tempStack));
+    }
+    free(tempStack);
+
+    return result;
+}
+
+// Main function to test the simplifyPath function
+int main() {
+    char path[1024];
+    printf("Enter the Unix path: ");
+    scanf("%s", path);
+
+    char *result = simplifyPath(path);
+    printf("Simplified Path: %s\n", result);
+    free(result);  // Free the result
+
+    return 0;
+}
+
+shortest path NO PAIR
+
+void shortestPath(int n, int adjMatrix[][n], int source) {
+    int visited[n];        // To keep track of visited nodes
+    int distance[n];       // To store the shortest distance from the source
+    int predecessor[n];    // To reconstruct the path
+    
+    for (int i = 0; i < n; i++) {
+        visited[i] = 0;
+        distance[i] = INT_MAX; // Initialize all distances as infinity
+        predecessor[i] = -1;   // No predecessor initially
+    }
+    
+    queue *q = makequeue();
+    enqueue(q, source);
+    visited[source] = 1;
+    distance[source] = 0; // Distance to source is 0
+    
+    // Perform BFS
+    while (q->size != 0) {
+        int node = dequeue(q);
+        
+        for (int j = 0; j < n; j++) {
+            if (adjMatrix[node][j] == 1 && visited[j] == 0) {
+                visited[j] = 1;
+                distance[j] = distance[node] + 1; // Increment distance
+                predecessor[j] = node;           // Set predecessor
+                enqueue(q, j);
+            }
+        }
+    }
+    
+    // Print shortest distances and paths
+    printf("Node\tDistance\tPath\n");
+    for (int i = 0; i < n; i++) {
+        printf("%d\t%d\t\t", i, distance[i]);
+        // Print the path by reconstructing it from predecessors
+        int path[MAX_NODES], pathSize = 0;
+        for (int current = i; current != -1; current = predecessor[current]) {
+            path[pathSize++] = current;
+        }
+        for (int k = pathSize - 1; k >= 0; k--) {
+            printf("%d", path[k]);
+            if (k != 0) printf(" -> ");
+        }
+        printf("\n");
+    }
+    
+    // Free the queue
+    free(q);
+}
+
+int main() {
+    int n = 6; // Number of nodes
+    int adjMatrix[6][6] = {
+        {0, 1, 0, 0, 1, 0},
+        {1, 0, 1, 1, 0, 0},
+        {0, 1, 0, 1, 0, 0},
+        {0, 1, 1, 0, 0, 1},
+        {1, 0, 0, 0, 0, 1},
+        {0, 0, 0, 1, 1, 0}
+    };
+    
+    int source = 0; // Source node
+    printf("Shortest paths from node %d:\n", source);
+    shortestPath(n, adjMatrix, source);
+    
+    return 0;
+}
+
+Shortest Path (With Pair) (0s for example)
+
+int dx[] = {-1, 1, 0, 0};
+int dy[] = {0, 0, -1, 1};
+
+// BFS to find the shortest path in a 2D grid
+int findShortestPath(int grid[][5], int rows, int cols, int sx, int sy, int ex, int ey) {
+    // Edge case: Start or end cell is blocked
+    if (grid[sx][sy] != 0 || grid[ex][ey] != 0) {
+        return -1;
+    }
+
+    // Visited array to track visited cells
+    int visited[rows][cols];
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            visited[i][j] = 0;
+        }
+    }
+
+    // Initialize queue
+    queue *q = makequeue();
+    enqueue(q, sx, sy);
+    visited[sx][sy] = 1;
+
+    int steps = 0;
+
+    // BFS loop
+    while (q->size > 0) {
+        int size = q->size;  // Number of elements at the current BFS level
+        for (int i = 0; i < size; i++) {
+            pair current = dequeue(q);
+            int x = current.x;
+            int y = current.y;
+
+            // Check if we reached the target
+            if (x == ex && y == ey) {
+                return steps;
+            }
+
+            // Explore all 4 possible directions
+            for (int d = 0; d < 4; d++) {
+                int nx = x + dx[d];
+                int ny = y + dy[d];
+
+                // Check if the new cell is within bounds, traversable, and not visited
+                if (nx >= 0 && nx < rows && ny >= 0 && ny < cols &&
+                    grid[nx][ny] == 0 && !visited[nx][ny]) {
+                    enqueue(q, nx, ny);
+                    visited[nx][ny] = 1;
+                }
+            }
+        }
+        steps++;  // Increment steps after processing one BFS level
+    }
+
+    // If we exit the loop, there is no path
+    return -1;
+}
+
+topological sorted
+
+#include <stdio.h>
+#include <stdlib.h>
+
+// Define the maximum number of vertices
+#define MAX_NODES 100
+
+// Adjacency List Representation
+typedef struct Node {
+    int vertex;
+    struct Node* next;
+} Node;
+
+// Graph structure
+typedef struct Graph {
+    int numVertices;
+    Node* adjList[MAX_NODES];
+    int visited[MAX_NODES];
+} Graph;
+
+// Stack structure for topological order
+typedef struct Stack {
+    int data[MAX_NODES];
+    int top;
+} Stack;
+
+// Function to create a new node
+Node* createNode(int vertex) {
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    newNode->vertex = vertex;
+    newNode->next = NULL;
+    return newNode;
+}
+
+// Function to create a graph
+Graph* createGraph(int vertices) {
+    Graph* graph = (Graph*)malloc(sizeof(Graph));
+    graph->numVertices = vertices;
+
+    for (int i = 0; i < vertices; i++) {
+        graph->adjList[i] = NULL;
+        graph->visited[i] = 0;
+    }
+
+    return graph;
+}
+
+// Add edge to the graph
+void addEdge(Graph* graph, int src, int dest) {
+    Node* newNode = createNode(dest);
+    newNode->next = graph->adjList[src];
+    graph->adjList[src] = newNode;
+}
+
+// Initialize stack
+Stack* createStack() {
+    Stack* stack = (Stack*)malloc(sizeof(Stack));
+    stack->top = -1;
+    return stack;
+}
+
+// Push to stack
+void push(Stack* stack, int vertex) {
+    stack->data[++stack->top] = vertex;
+}
+
+// Pop from stack
+int pop(Stack* stack) {
+    return stack->data[stack->top--];
+}
+
+// Perform DFS for Topological Sort
+void dfs(Graph* graph, int vertex, Stack* stack) {
+    graph->visited[vertex] = 1;
+
+    Node* temp = graph->adjList[vertex];
+    while (temp) {
+        int adjVertex = temp->vertex;
+        if (!graph->visited[adjVertex]) {
+            dfs(graph, adjVertex, stack);
+        }
+        temp = temp->next;
+    }
+
+    // Push the current vertex to the stack after processing all neighbors
+    push(stack, vertex);
+}
+
+// Topological Sort Function
+void topologicalSort(Graph* graph) {
+    Stack* stack = createStack();
+
+    // Perform DFS for all unvisited vertices
+    for (int i = 0; i < graph->numVertices; i++) {
+        if (!graph->visited[i]) {
+            dfs(graph, i, stack);
+        }
+    }
+
+    // Print topological order by popping from stack
+    printf("Topological Order:\n");
+    while (stack->top != -1) {
+        printf("%d ", pop(stack));
+    }
+    printf("\n");
+
+    free(stack);
+}
+
+// Main Function
+int main() {
+    int vertices = 6;
+    Graph* graph = createGraph(vertices);
+
+    addEdge(graph, 5, 0);
+    addEdge(graph, 5, 2);
+    addEdge(graph, 4, 0);
+    addEdge(graph, 4, 1);
+    addEdge(graph, 2, 3);
+    addEdge(graph, 3, 1);
+
+    topologicalSort(graph);
+
+    // Free the graph
+    for (int i = 0; i < vertices; i++) {
+        Node* temp = graph->adjList[i];
+        while (temp) {
+            Node* next = temp->next;
+            free(temp);
+            temp = next;
+        }
+    }
+    free(graph);
+
+    return 0;
+}
+
+
+
+
+
+
+
